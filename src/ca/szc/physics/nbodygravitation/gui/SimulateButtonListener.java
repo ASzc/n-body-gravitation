@@ -27,7 +27,6 @@ public class SimulateButtonListener
     {
         if ( "simulate".equals( e.getActionCommand() ) )
         {
-
             Universe universe = new Universe( GuiModelExecutor.class );
 
             GuiModelExecutor executor = (GuiModelExecutor) universe.getExecutor();

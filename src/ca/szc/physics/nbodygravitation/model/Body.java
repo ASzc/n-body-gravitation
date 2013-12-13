@@ -44,9 +44,9 @@ public class Body
     /**
      * Create a body for a two dimensional universe
      */
-    public Body( double gravitationalConstant, double mass, Pair<Double> initialPosition, Pair<Double> initialVelocity )
+    public Body( double gravConst, double mass, Pair<Double> initialPosition, Pair<Double> initialVelocity )
     {
-        this.gravConst = gravitationalConstant;
+        this.gravConst = gravConst;
         this.mass = mass;
 
         dimensions = 2;

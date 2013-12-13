@@ -28,7 +28,7 @@ public class UniversalConstants
     /**
      * Newtonian gravitational constant. Units: Nm²kg⁻²
      */
-    public final double gravitationalConstant;
+    public final double gravConst;
 
     /**
      * Sol's mass. Units: kg
@@ -57,7 +57,7 @@ public class UniversalConstants
     public UniversalConstants( int dimensions, double gravitationalConstant, double solarMass )
     {
         this.dimensions = dimensions;
-        this.gravitationalConstant = gravitationalConstant;
+        this.gravConst = gravitationalConstant;
         this.solarMass = solarMass;
     }
 }
