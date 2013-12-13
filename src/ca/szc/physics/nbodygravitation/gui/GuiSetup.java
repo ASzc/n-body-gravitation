@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
@@ -37,6 +36,7 @@ public class GuiSetup
         constraints.weightx = 0.5;
         JButton simulateButton = new JButton();
         simulateButton.setText( "Simulate" );
+        simulateButton.setActionCommand( "simulate" );
         frame.add( simulateButton, constraints );
 
         constraints = new GridBagConstraints();
@@ -46,14 +46,14 @@ public class GuiSetup
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.fill = GridBagConstraints.BOTH;
-        JPanel drawPanel = new JPanel();
+        DrawPanel drawPanel = new DrawPanel();
         drawPanel.setBackground( Color.BLACK );
         drawPanel.setPreferredSize( new Dimension( 400, 300 ) );
         frame.add( drawPanel, constraints );
 
+        simulateButton.addActionListener( new SimulateButtonListener( numBodiesSpinner, drawPanel ) );
+
         frame.pack();
         frame.setVisible( true );
     }
-    
-    //TODO make/start a thread with access to drawPanel and the Universe the simulate button will create?
 }

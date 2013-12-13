@@ -55,6 +55,11 @@ public class Universe
     private final List<Body> bodies;
 
     /**
+     * The model simulation executor
+     */
+    private final ModelExecutor executor;
+
+    /**
      * The model simulation method
      */
     private final ModelMethod method;
@@ -111,12 +116,22 @@ public class Universe
         {
             Constructor<? extends ModelExecutor> constructor =
                 modelExecutor.getConstructor( List.class, ModelMethod.class );
-            ModelExecutor executor = constructor.newInstance( bodies, method );
+            executor = constructor.newInstance( bodies, method );
         }
         catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
                         | IllegalArgumentException | InvocationTargetException e )
         {
             throw new RuntimeException( "Unable to create an instance of modelMethod", e );
         }
+    }
+
+    /**
+     * Get the instance of the modelExecutor class passed to the Universe constructor
+     * 
+     * @return A ModelExecutor instantiated with variables encapsulated in this Universe
+     */
+    public ModelExecutor getExecutor()
+    {
+        return executor;
     }
 }

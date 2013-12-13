@@ -9,6 +9,7 @@ import ca.szc.physics.nbodygravitation.model.method.ModelMethod;
  * Abstract class for a model executor. Reads from the bodies list in between calls to the ModelMethod.
  */
 public abstract class ModelExecutor
+    implements Runnable
 {
     protected final List<Body> bodies;
 
