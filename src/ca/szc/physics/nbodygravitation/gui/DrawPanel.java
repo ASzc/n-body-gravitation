@@ -32,9 +32,13 @@ public class DrawPanel
     {
         g.setColor( Color.ORANGE );
 
-        for ( Pair<Integer> coords : getPoints() )
+        List<Pair<Integer>> points = getPoints();
+        if ( points != null )
         {
-            g.drawLine( coords.a, coords.b, coords.a, coords.b );
+            for ( Pair<Integer> coords : points )
+            {
+                g.drawLine( coords.a, coords.b, coords.a, coords.b );
+            }
         }
     }
 

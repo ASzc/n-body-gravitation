@@ -9,6 +9,16 @@ import ca.szc.physics.nbodygravitation.util.Pair;
 public class RandomCircularOrbitsStrategy
     extends PopulationStrategy
 {
+    public static double exp( double lambda )
+    {
+        return -Math.log( 1 - Math.random() ) / lambda;
+    }
+
+    public RandomCircularOrbitsStrategy( UniversalConstants constants )
+    {
+        super( constants );
+    }
+
     /**
      * Calculate the required velocity vector for a circular orbit around the origin. Based on the formula v=(Gm/r)^0.5
      * 
@@ -24,16 +34,10 @@ public class RandomCircularOrbitsStrategy
 
         double absangle = Math.atan( Math.abs( positionOfSatellite.b / positionOfSatellite.a ) );
         double thetav = Math.PI / 2 - absangle;
-        double phiv = Math.random() * Math.PI;
         double vx = -1 * Math.signum( positionOfSatellite.b ) * Math.cos( thetav ) * velocityMagnitude;
         double vy = Math.signum( positionOfSatellite.a ) * Math.sin( thetav ) * velocityMagnitude;
 
         return new Pair<Double>( vx, vy );
-    }
-
-    public RandomCircularOrbitsStrategy( UniversalConstants constants )
-    {
-        super( constants );
     }
 
     private Body newBody( Pair<Double> initialPosition, Pair<Double> initialVelocity )
@@ -51,7 +55,9 @@ public class RandomCircularOrbitsStrategy
 
         for ( int i = 0; i < 8; i++ )
         {
-            Pair<Double> position = new Pair<Double>( 0.0d, 0.0d );
+            double px = 1e18 * exp( -1.8 ) * ( .5 - Math.random() );
+            double py = 1e18 * exp( -1.8 ) * ( .5 - Math.random() );
+            Pair<Double> position = new Pair<Double>( px, py );
 
             bodies.add( new Body( constants.gravConst, earthMass, position,
                                   getCircleOrbitVelocity( constants.solarMass, position ) ) );
