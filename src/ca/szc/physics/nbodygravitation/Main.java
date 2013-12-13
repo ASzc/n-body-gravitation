@@ -18,14 +18,16 @@
  */
 package ca.szc.physics.nbodygravitation;
 
+import javax.swing.SwingUtilities;
+
+import ca.szc.physics.nbodygravitation.gui.GuiSetup;
+
 // Created with reference to http://physics.princeton.edu/~fpretori/Nbody
 
 public class Main
 {
-
     public static void main( String[] args )
     {
-        // TODO init GUI
+        SwingUtilities.invokeLater( new GuiSetup() );
     }
-
 }

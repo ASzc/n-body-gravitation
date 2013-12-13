@@ -117,6 +117,11 @@ public class Universe
         this.solarMass = solarMass;
     }
 
+    public List<Body> getBodies()
+    {
+        return bodies;
+    }
+
     public ModelMethod getMethod()
     {
         return method;
