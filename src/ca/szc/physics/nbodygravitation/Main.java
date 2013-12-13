@@ -26,6 +26,9 @@ import ca.szc.physics.nbodygravitation.gui.GuiSetup;
 
 public class Main
 {
+    /**
+     * GUI only for now
+     */
     public static void main( String[] args )
     {
         SwingUtilities.invokeLater( new GuiSetup() );

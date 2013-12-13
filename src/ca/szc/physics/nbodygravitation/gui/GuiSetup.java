@@ -27,17 +27,17 @@ public class GuiSetup
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
-        JSpinner spinner = new JSpinner();
-        spinner.setModel( new SpinnerNumberModel( 8, 2, 100, 1 ) );
-        frame.add( spinner, constraints );
+        JSpinner numBodiesSpinner = new JSpinner();
+        numBodiesSpinner.setModel( new SpinnerNumberModel( 8, 2, 100, 1 ) );
+        frame.add( numBodiesSpinner, constraints );
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
-        JButton button = new JButton();
-        button.setText( "Simulate" );
-        frame.add( button, constraints );
+        JButton simulateButton = new JButton();
+        simulateButton.setText( "Simulate" );
+        frame.add( simulateButton, constraints );
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -54,4 +54,6 @@ public class GuiSetup
         frame.pack();
         frame.setVisible( true );
     }
+    
+    //TODO make/start a thread with access to drawPanel and the Universe the simulate button will create?
 }

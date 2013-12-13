@@ -25,6 +25,8 @@ import java.util.List;
 
 import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
 import ca.szc.physics.nbodygravitation.model.method.ModelMethod;
+import ca.szc.physics.nbodygravitation.model.population.PopulationStrategy;
+import ca.szc.physics.nbodygravitation.model.population.RandomCircularOrbitsStrategy;
 
 /**
  * A universe containing bodies that is subject to constants
@@ -32,24 +34,19 @@ import ca.szc.physics.nbodygravitation.model.method.ModelMethod;
 public class Universe
 {
     /**
-     * The default number of dimensions
-     */
-    public static final int DEFAULT_DIMENSIONS = 2;
-
-    /**
-     * The default Newtonian gravitational constant. Units: Nm²kg⁻²
-     */
-    public static final double DEFAULT_GRAV_CONST = 6.673e-11;
-
-    /**
      * The default model simulation method
      */
     public static final Class<? extends ModelMethod> DEFAULT_METHOD = DirectMethod.class;
 
     /**
-     * The default mass of Sol. Units: kg
+     * The default universe population strategy
      */
-    public static final double DEFAULT_SOLAR_MASS = 1.988435e30;
+    public static final Class<? extends PopulationStrategy> DEFAULT_POPULATOR = RandomCircularOrbitsStrategy.class;
+
+    /**
+     * The default universal constants
+     */
+    public static final UniversalConstants DEFAULT_CONSTANTS = new UniversalConstants();
 
     /**
      * The list of Body instances in the universe
@@ -57,73 +54,54 @@ public class Universe
     private final List<Body> bodies;
 
     /**
-     * The number of dimensions (2 or 3)
-     */
-    private final int dimensions;
-
-    /**
-     * Newtonian gravitational constant. Units: Nm²kg⁻²
-     */
-    private final double gravitationalConstant;
-
-    /**
      * The model simulation method
      */
     private final ModelMethod method;
 
     /**
-     * Sol's mass. Units: kg
-     */
-    private final double solarMass;
-
-    /**
      * A Universe with default values
      * 
-     * @see #DEFAULT_DIMENSIONS
-     * @see #DEFAULT_GRAV_CONST
-     * @see #DEFAULT_SOLAR_MASS
+     * @see #DEFAULT_CONSTANTS
+     * @see #DEFAULT_POPULATOR
      * @see #DEFAULT_METHOD
      */
     public Universe()
     {
-        this( DEFAULT_DIMENSIONS, DEFAULT_GRAV_CONST, DEFAULT_SOLAR_MASS, DEFAULT_METHOD );
+        this( DEFAULT_CONSTANTS, DEFAULT_POPULATOR, DEFAULT_METHOD );
     }
 
     /**
      * A Universe with customized values
      * 
-     * @param gravitationalConstant The Newtonian gravitational constant. Units: Nm²kg⁻²
-     * @param solarMass The mass of Sol. Units: kg
-     * @param updater The class of the model updater.
+     * @param constants The applicable universal constants.
+     * @param populator The class of the universe populator.
+     * @param modelMethod The class of the model method.
      */
-    public Universe( int dimensions, double gravitationalConstant, double solarMass,
-                     Class<? extends ModelMethod> updater )
+    public Universe( UniversalConstants constants, Class<? extends PopulationStrategy> populator,
+                     Class<? extends ModelMethod> modelMethod )
     {
-        bodies = new LinkedList<>();
-        this.dimensions = dimensions;
-        this.gravitationalConstant = gravitationalConstant;
+        try
+        {
+            Constructor<? extends PopulationStrategy> constructor = populator.getConstructor( UniversalConstants.class );
+            PopulationStrategy populatorInstance = constructor.newInstance( constants );
+            bodies = new LinkedList<Body>();
+            populatorInstance.populate( bodies );
+        }
+        catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+                        | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw new RuntimeException( "Unable to create an instance of populator", e );
+        }
 
         try
         {
-            Constructor<? extends ModelMethod> constructor = updater.getConstructor( List.class );
+            Constructor<? extends ModelMethod> constructor = modelMethod.getConstructor( List.class );
             this.method = constructor.newInstance( bodies );
         }
         catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
                         | IllegalArgumentException | InvocationTargetException e )
         {
-            throw new RuntimeException( "Unable to create an instance of updater", e );
+            throw new RuntimeException( "Unable to create an instance of modelMethod", e );
         }
-
-        this.solarMass = solarMass;
-    }
-
-    public List<Body> getBodies()
-    {
-        return bodies;
-    }
-
-    public ModelMethod getMethod()
-    {
-        return method;
     }
 }
