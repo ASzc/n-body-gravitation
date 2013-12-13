@@ -74,10 +74,14 @@ public class Body
      * Calculate the gravitational force acting from other to this, and update the force components of this. Newtonian
      * gravity.
      * 
-     * @param other A Body of >= dimensions to this
+     * @param other A Body of >= dimensions to this (ideally equal dimensions)
      */
     public void applyForceFrom( Body other )
     {
+        // Shouldn't be able to affect itself
+        if ( this == other )
+            return;
+
         // Calculate Euclidean distance
         double[] distanceComponents = new double[dimensions];
         double distanceSquared = 0.0d;
@@ -94,7 +98,7 @@ public class Body
         double distance = Math.sqrt( distanceSquared );
         for ( int i = 0; i < dimensions; i++ )
         {
-            force[i] = combinedForce * distanceComponents[i] / distance;
+            force[i] += combinedForce * distanceComponents[i] / distance;
         }
     }
 
@@ -106,11 +110,6 @@ public class Body
     public double[] getPosition()
     {
         return position;
-    }
-
-    public double[] getVelocity()
-    {
-        return velocity;
     }
 
     /**
@@ -127,6 +126,17 @@ public class Body
         {
             velocity[i] += deltaTime * force[i] / mass;
             position[i] += deltaTime * velocity[i];
+        }
+    }
+
+    /**
+     * Set force components to zero. Call prior to starting a new round of {@link #applyForceFrom(Body)} calls.
+     */
+    public void resetForce()
+    {
+        for ( int i = 0; i < dimensions; i++ )
+        {
+            force[i] = 0.0d;
         }
     }
 }

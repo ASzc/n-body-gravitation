@@ -16,10 +16,22 @@
  * You should have received a copy of the GNU General Public License along with
  * n-body-gravitation.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.szc.physics.nbodygravitation.model.updater;
+package ca.szc.physics.nbodygravitation.model.method;
 
-public class BruteForceUpdater
-    extends ModelUpdater
+import java.util.List;
+
+import ca.szc.physics.nbodygravitation.model.Body;
+
+/**
+ * Abstract class for a model simulation method
+ */
+public abstract class ModelMethod
+    implements Runnable
 {
+    protected final List<Body> bodies;
 
+    public ModelMethod( List<Body> bodies )
+    {
+        this.bodies = bodies;
+    }
 }

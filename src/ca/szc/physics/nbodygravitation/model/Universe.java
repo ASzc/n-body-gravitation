@@ -18,8 +18,13 @@
  */
 package ca.szc.physics.nbodygravitation.model;
 
-import ca.szc.physics.nbodygravitation.model.updater.BruteForceUpdater;
-import ca.szc.physics.nbodygravitation.model.updater.ModelUpdater;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
+
+import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
+import ca.szc.physics.nbodygravitation.model.method.ModelMethod;
 
 /**
  * A universe containing bodies that is subject to constants
@@ -37,14 +42,19 @@ public class Universe
     public static final double DEFAULT_GRAV_CONST = 6.673e-11;
 
     /**
+     * The default model simulation method
+     */
+    public static final Class<? extends ModelMethod> DEFAULT_METHOD = DirectMethod.class;
+
+    /**
      * The default mass of Sol. Units: kg
      */
     public static final double DEFAULT_SOLAR_MASS = 1.988435e30;
 
     /**
-     * The default simulation updater
+     * The list of Body instances in the universe
      */
-    public static final Class<? extends ModelUpdater> DEFAULT_UPDATER = BruteForceUpdater.class;
+    private final List<Body> bodies;
 
     /**
      * The number of dimensions (2 or 3)
@@ -57,14 +67,14 @@ public class Universe
     private final double gravitationalConstant;
 
     /**
+     * The model simulation method
+     */
+    private final ModelMethod method;
+
+    /**
      * Sol's mass. Units: kg
      */
     private final double solarMass;
-
-    /**
-     * The simulation updater
-     */
-    private final ModelUpdater updater;
 
     /**
      * A Universe with default values
@@ -72,11 +82,11 @@ public class Universe
      * @see #DEFAULT_DIMENSIONS
      * @see #DEFAULT_GRAV_CONST
      * @see #DEFAULT_SOLAR_MASS
-     * @see #DEFAULT_UPDATER
+     * @see #DEFAULT_METHOD
      */
     public Universe()
     {
-        this( DEFAULT_DIMENSIONS, DEFAULT_GRAV_CONST, DEFAULT_SOLAR_MASS, DEFAULT_UPDATER );
+        this( DEFAULT_DIMENSIONS, DEFAULT_GRAV_CONST, DEFAULT_SOLAR_MASS, DEFAULT_METHOD );
     }
 
     /**
@@ -87,19 +97,28 @@ public class Universe
      * @param updater The class of the model updater.
      */
     public Universe( int dimensions, double gravitationalConstant, double solarMass,
-                     Class<? extends ModelUpdater> updater )
+                     Class<? extends ModelMethod> updater )
     {
+        bodies = new LinkedList<>();
         this.dimensions = dimensions;
         this.gravitationalConstant = gravitationalConstant;
-        this.solarMass = solarMass;
+
         try
         {
-            this.updater = updater.newInstance();
+            Constructor<? extends ModelMethod> constructor = updater.getConstructor( List.class );
+            this.method = constructor.newInstance( bodies );
         }
-        catch ( InstantiationException | IllegalAccessException e )
+        catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+                        | IllegalArgumentException | InvocationTargetException e )
         {
             throw new RuntimeException( "Unable to create an instance of updater", e );
         }
+
+        this.solarMass = solarMass;
     }
 
+    public ModelMethod getMethod()
+    {
+        return method;
+    }
 }
