@@ -34,8 +34,7 @@ public class DirectMethod
     public DirectMethod( List<Body> bodies )
     {
         super( bodies );
-
-        lastRun = System.currentTimeMillis();
+        lastRun = 0;
     }
 
     @Override
@@ -52,10 +51,14 @@ public class DirectMethod
         }
 
         // Update positions
+
         // Scale a constant by the time between calls for FPS compensation
         long currentTime = System.currentTimeMillis();
+        if ( lastRun == 0 )
+            lastRun = currentTime - 1;
         double deltaTime = 1e11 * ( currentTime - lastRun );
         lastRun = currentTime;
+
         for ( Body body : bodies )
         {
             body.move( deltaTime );
