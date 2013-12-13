@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
+import ca.szc.physics.nbodygravitation.model.executor.ModelExecutor;
 import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
 import ca.szc.physics.nbodygravitation.model.method.ModelMethod;
 import ca.szc.physics.nbodygravitation.model.population.PopulationStrategy;
@@ -34,6 +35,11 @@ import ca.szc.physics.nbodygravitation.model.population.RandomCircularOrbitsStra
 public class Universe
 {
     /**
+     * The default universal constants
+     */
+    public static final UniversalConstants DEFAULT_CONSTANTS = new UniversalConstants();
+
+    /**
      * The default model simulation method
      */
     public static final Class<? extends ModelMethod> DEFAULT_METHOD = DirectMethod.class;
@@ -42,11 +48,6 @@ public class Universe
      * The default universe population strategy
      */
     public static final Class<? extends PopulationStrategy> DEFAULT_POPULATOR = RandomCircularOrbitsStrategy.class;
-
-    /**
-     * The default universal constants
-     */
-    public static final UniversalConstants DEFAULT_CONSTANTS = new UniversalConstants();
 
     /**
      * The list of Body instances in the universe
@@ -61,13 +62,14 @@ public class Universe
     /**
      * A Universe with default values
      * 
+     * @param modelExecutor The class of the model executor.
      * @see #DEFAULT_CONSTANTS
      * @see #DEFAULT_POPULATOR
      * @see #DEFAULT_METHOD
      */
-    public Universe()
+    public Universe( Class<? extends ModelExecutor> modelExecutor )
     {
-        this( DEFAULT_CONSTANTS, DEFAULT_POPULATOR, DEFAULT_METHOD );
+        this( DEFAULT_CONSTANTS, DEFAULT_POPULATOR, modelExecutor, DEFAULT_METHOD );
     }
 
     /**
@@ -75,10 +77,11 @@ public class Universe
      * 
      * @param constants The applicable universal constants.
      * @param populator The class of the universe populator.
+     * @param modelExecutor The class of the model executor.
      * @param modelMethod The class of the model method.
      */
     public Universe( UniversalConstants constants, Class<? extends PopulationStrategy> populator,
-                     Class<? extends ModelMethod> modelMethod )
+                     Class<? extends ModelExecutor> modelExecutor, Class<? extends ModelMethod> modelMethod )
     {
         try
         {
@@ -97,6 +100,18 @@ public class Universe
         {
             Constructor<? extends ModelMethod> constructor = modelMethod.getConstructor( List.class );
             this.method = constructor.newInstance( bodies );
+        }
+        catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+                        | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw new RuntimeException( "Unable to create an instance of modelMethod", e );
+        }
+
+        try
+        {
+            Constructor<? extends ModelExecutor> constructor =
+                modelExecutor.getConstructor( List.class, ModelMethod.class );
+            ModelExecutor executor = constructor.newInstance( bodies, method );
         }
         catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
                         | IllegalArgumentException | InvocationTargetException e )
