@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ca.szc.physics.nbodygravitation.model.Body;
+import ca.szc.physics.nbodygravitation.model2.method.DirectMethod;
+import ca.szc.physics.nbodygravitation.model2.method.SimulationMethod;
 import ca.szc.physics.nbodygravitation.model2.populator.Populator;
 import ca.szc.physics.nbodygravitation.model2.populator.SolSystemPopulator;
 
@@ -19,29 +21,34 @@ public class Universe
      */
     public final Double gravConst = 6.673e-11;
 
-    // Is a bodies list needed?
     private final List<Body> bodies;
 
     private final List<TwoDimValue<Double>> bodyPositions;
 
     private final List<TwoDimValue<Double>> bodyVelocities;
 
+    private final SimulationMethod simulationMethod;
+
     /**
      * A default universe
      * 
      * @see {@link SolSystemPopulator}
+     * @see {@link DirectMethod}
      */
     public Universe()
     {
-        this( SolSystemPopulator.class );
+        this( SolSystemPopulator.class, DirectMethod.class, 3.6e3 );
     }
 
     /**
      * A custom universe
      * 
      * @param populator The class of the desired populator
+     * @param populator The class of the desired simulationMethod
+     * @param timeStep The time that will advance with each call to {@link #simulate()}. Units: s
      */
-    public Universe( Class<? extends Populator> populator )
+    public Universe( Class<? extends Populator> populator, Class<? extends SimulationMethod> simulationMethod,
+                     double timeStep )
     {
         bodies = new LinkedList<>();
         bodyPositions = new LinkedList<>();
@@ -60,6 +67,18 @@ public class Universe
         {
             throw new RuntimeException( "Unable to create an instance of populator", e );
         }
+
+        try
+        {
+            Constructor<? extends SimulationMethod> constructor =
+                simulationMethod.getConstructor( List.class, double.class );
+            this.simulationMethod = constructor.newInstance( bodies, timeStep );
+        }
+        catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+                        | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw new RuntimeException( "Unable to create an instance of simulationMethod", e );
+        }
     }
 
     /**
@@ -77,6 +96,6 @@ public class Universe
      */
     public void simulate()
     {
-
+        simulationMethod.simulate();
     }
 }
