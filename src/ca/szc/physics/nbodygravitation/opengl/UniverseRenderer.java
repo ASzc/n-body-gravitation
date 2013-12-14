@@ -1,7 +1,5 @@
 package ca.szc.physics.nbodygravitation.opengl;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -15,13 +13,6 @@ public class UniverseRenderer
     private double s = 0;
 
     private double theta = 0;
-
-    private ConcurrentHashMap<String, Object> universeGuiProperties;
-
-    public UniverseRenderer( ConcurrentHashMap<String, Object> universeGuiProperties )
-    {
-        this.universeGuiProperties = universeGuiProperties;
-    }
 
     @Override
     public void display( GLAutoDrawable drawable )
