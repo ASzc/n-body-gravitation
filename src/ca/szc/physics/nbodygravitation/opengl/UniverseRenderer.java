@@ -16,11 +16,11 @@ public class UniverseRenderer
 
     private double theta = 0;
 
-    private ConcurrentHashMap<String, Object> universeGUIProperties;
+    private ConcurrentHashMap<String, Object> universeGuiProperties;
 
-    public UniverseRenderer( ConcurrentHashMap<String, Object> universeGUIProperties )
+    public UniverseRenderer( ConcurrentHashMap<String, Object> universeGuiProperties )
     {
-        this.universeGUIProperties = universeGUIProperties;
+        this.universeGuiProperties = universeGuiProperties;
     }
 
     @Override
