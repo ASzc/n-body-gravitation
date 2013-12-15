@@ -42,8 +42,6 @@ public class UniverseRenderer
 
     private final ConcurrentLinkedQueue<KeyEvent> keyEventQueue;
 
-    private int simStepsPerFrame;
-
     private MouseEvent lastMouseDraggedEvent;
 
     private MouseEvent lastMousePressedEvent;
@@ -51,6 +49,8 @@ public class UniverseRenderer
     private final double maxBound;
 
     private final ConcurrentLinkedQueue<MouseEvent> mouseEventQueue;
+
+    private int simStepsPerFrame;
 
     private final Universe universe;
 
@@ -163,6 +163,24 @@ public class UniverseRenderer
         }
     }
 
+    @Override
+    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
+    {
+        // http://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_Introduction.html
+        // >1 if width is larger, <1 is height is larger, =1 if they are the same
+        double aspectRatio = ( (double) width ) / Math.max( height, 1 );
+
+        GL2 gl = drawable.getGL().getGL2();
+
+        gl.glMatrixMode( GL2.GL_PROJECTION );
+        gl.glLoadIdentity();
+
+        if ( aspectRatio >= 1 )
+            glu.gluOrtho2D( -maxBound * aspectRatio, maxBound * aspectRatio, -maxBound, maxBound );
+        else if ( aspectRatio < 1 )
+            glu.gluOrtho2D( -maxBound, maxBound, -maxBound / aspectRatio, maxBound / aspectRatio );
+    }
+
     private void runSimulation()
     {
         // Process input events
@@ -181,23 +199,5 @@ public class UniverseRenderer
         {
             universe.simulate();
         }
-    }
-
-    @Override
-    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
-    {
-        // http://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_Introduction.html
-        // >1 if width is larger, <1 is height is larger, =1 if they are the same
-        double aspectRatio = ( (double) width ) / Math.max( height, 1 );
-
-        GL2 gl = drawable.getGL().getGL2();
-
-        gl.glMatrixMode( GL2.GL_PROJECTION );
-        gl.glLoadIdentity();
-
-        if ( aspectRatio >= 1 )
-            glu.gluOrtho2D( -maxBound * aspectRatio, maxBound * aspectRatio, -maxBound, maxBound );
-        else if ( aspectRatio < 1 )
-            glu.gluOrtho2D( -maxBound, maxBound, -maxBound / aspectRatio, maxBound / aspectRatio );
     }
 }
