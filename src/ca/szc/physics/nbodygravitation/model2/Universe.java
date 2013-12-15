@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import ca.szc.physics.nbodygravitation.model.Body;
 import ca.szc.physics.nbodygravitation.model2.method.DirectMethod;
@@ -37,7 +38,7 @@ public class Universe
      */
     public Universe()
     {
-        this( SolSystemPopulator.class, DirectMethod.class, 3.6e3 );
+        this( SolSystemPopulator.class, DirectMethod.class, TimeUnit.HOURS.toSeconds( 48 ) );
     }
 
     /**
