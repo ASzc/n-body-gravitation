@@ -60,6 +60,9 @@ public class Body
 
         velocity.setX( velocity.getX() + ( timeStep * force.getX() / mass ) );
         velocity.setY( velocity.getY() + ( timeStep * force.getY() / mass ) );
+
+        position.setX( position.getX() + ( timeStep * velocity.getX() ) );
+        position.setY( position.getY() + ( timeStep * velocity.getY() ) );
     }
 
     public void resetForce()
