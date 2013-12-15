@@ -18,14 +18,12 @@
  */
 package ca.szc.physics.nbodygravitation.opengl;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
-import javax.swing.JFrame;
 
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
 
 public class OpenGlSetup
@@ -34,26 +32,31 @@ public class OpenGlSetup
     @Override
     public void run()
     {
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        frame.setLayout( new BorderLayout() );
-        frame.setTitle( "n-body-gravitation" );
-
-        // OpenGL canvas
         GLProfile glProfile = GLProfile.getDefault();
         GLCapabilities glCapabilities = new GLCapabilities( glProfile );
-        GLCanvas glCanvas = new GLCanvas( glCapabilities );
-        glCanvas.addGLEventListener( new UniverseRenderer() );
-        glCanvas.setPreferredSize( new Dimension( 800, 800 ) );
-        frame.add( glCanvas, BorderLayout.CENTER );
 
-        // TODO eventually would like to do click-drag mouse for position/vector input of a new object to predict the
-        // motion of ^^^^
+        // Use a NEWT window
+        GLWindow window = GLWindow.create( glCapabilities );
+        window.setTitle( "n-body-gravitation" );
+        window.setSize( 800, 800 );
 
-        FPSAnimator animator = new FPSAnimator( glCanvas, 60 );
+        window.addWindowListener( new WindowAdapter()
+        {
+            @Override
+            public void windowDestroyed( WindowEvent e )
+            {
+                System.exit( 0 );
+            };
+        } );
+
+        window.addGLEventListener( new UniverseRenderer() );
+
+        FPSAnimator animator = new FPSAnimator( window, 60 );
         animator.start();
 
-        frame.pack();
-        frame.setVisible( true );
+        // TODO eventually would like to do click-drag mouse for position/vector input of a new object to predict the
+        // motion of
+
+        window.setVisible( true );
     }
 }
