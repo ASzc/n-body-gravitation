@@ -75,10 +75,11 @@ public class UniverseRenderer
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
         GL2 gl = drawable.getGL().getGL2();
+
         GLU glu = new GLU();
 
         // Compute aspect ratio of the new window
-        float aspect;
+        double aspect;
         if ( height != 0 )
             aspect = width / height;
         else

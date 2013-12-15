@@ -26,7 +26,7 @@ public class OpenGlSetup
         GLCapabilities glCapabilities = new GLCapabilities( glProfile );
         GLCanvas glCanvas = new GLCanvas( glCapabilities );
         glCanvas.addGLEventListener( new UniverseRenderer() );
-        glCanvas.setPreferredSize( new Dimension( 640, 480 ) );
+        glCanvas.setPreferredSize( new Dimension( 800, 800 ) );
         frame.add( glCanvas, BorderLayout.CENTER );
 
         // TODO eventually would like to do click-drag mouse for position/vector input of a new object to predict the
