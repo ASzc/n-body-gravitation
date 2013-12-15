@@ -33,6 +33,13 @@ import com.jogamp.opengl.util.FPSAnimator;
 public class OpenGlSetup
     implements Runnable
 {
+    private final boolean printFps;
+
+    public OpenGlSetup( boolean printFps )
+    {
+        this.printFps = printFps;
+    }
+
     @Override
     public void run()
     {
@@ -62,6 +69,7 @@ public class OpenGlSetup
         window.addGLEventListener( new UniverseRenderer( mouseEventQueue, keyEventQueue ) );
 
         FPSAnimator animator = new FPSAnimator( window, 60 );
+        animator.setUpdateFPSFrames( 120, printFps ? System.out : null );
         animator.start();
 
         window.setVisible( true );

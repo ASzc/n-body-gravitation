@@ -18,6 +18,8 @@
  */
 package ca.szc.physics.nbodygravitation;
 
+import java.util.Arrays;
+
 import ca.szc.physics.nbodygravitation.opengl.OpenGlSetup;
 
 // Created with reference to http://physics.princeton.edu/~fpretori/Nbody
@@ -29,6 +31,6 @@ public class Main
      */
     public static void main( String[] args )
     {
-        new OpenGlSetup().run();
+        new OpenGlSetup( Arrays.asList( args ).contains( "--fps" ) ).run();
     }
 }

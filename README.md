@@ -21,6 +21,10 @@ The jar is dependent on the JOGL native libraries, which are copied to target/li
 
 ### Controls
 
+#### CLI options
+
+*   --fps will cause FPS statistics to be printed to stdout every two seconds
+
 #### Keyboard
 
 *   Plus/Equals key: Increase the number of simulation steps per frame
