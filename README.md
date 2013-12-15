@@ -12,9 +12,16 @@ Motivated by the question "How hard could it be?" upon hearing that n-body gravi
 
 ## How to use
 
-Build/run:
+### Build & run
 
     mvn package
     java -jar target/*.jar
 
 The jar is dependent on the JOGL native libraries, which are copied to target/lib/ at compile time.
+
+### Controls
+
+#### Keyboard
+
+*   Plus/Equals key: Increase the number of simulation steps per frame
+*   Minus key: Decrease the number of simulation steps per frame

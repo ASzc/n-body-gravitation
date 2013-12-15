@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
 
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
@@ -53,8 +54,12 @@ public class OpenGlSetup
         } );
 
         ConcurrentLinkedQueue<MouseEvent> mouseEventQueue = new ConcurrentLinkedQueue<>();
-        window.addGLEventListener( new UniverseRenderer( mouseEventQueue ) );
         window.addMouseListener( new MousePointAndDrag( mouseEventQueue, MouseEvent.BUTTON1 ) );
+
+        ConcurrentLinkedQueue<KeyEvent> keyEventQueue = new ConcurrentLinkedQueue<>();
+        window.addKeyListener( new KeyboardSimulationControl( keyEventQueue ) );
+
+        window.addGLEventListener( new UniverseRenderer( mouseEventQueue, keyEventQueue ) );
 
         FPSAnimator animator = new FPSAnimator( window, 60 );
         animator.start();

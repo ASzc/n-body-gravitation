@@ -30,6 +30,7 @@ import javax.media.opengl.glu.GLU;
 import ca.szc.physics.nbodygravitation.model.TwoDimValue;
 import ca.szc.physics.nbodygravitation.model.Universe;
 
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public class UniverseRenderer
@@ -38,6 +39,10 @@ public class UniverseRenderer
     private final List<TwoDimValue<Double>> bodyPositions;
 
     private final GLU glu = new GLU();
+
+    private final ConcurrentLinkedQueue<KeyEvent> keyEventQueue;
+
+    private int simStepsPerFrame;
 
     private MouseEvent lastMouseDraggedEvent;
 
@@ -49,10 +54,13 @@ public class UniverseRenderer
 
     private final Universe universe;
 
-    public UniverseRenderer( ConcurrentLinkedQueue<MouseEvent> mouseEventQueue )
+    public UniverseRenderer( ConcurrentLinkedQueue<MouseEvent> mouseEventQueue,
+                             ConcurrentLinkedQueue<KeyEvent> keyEventQueue )
     {
         this.mouseEventQueue = mouseEventQueue;
-        lastMousePressedEvent = null;
+        this.keyEventQueue = keyEventQueue;
+
+        simStepsPerFrame = 1;
 
         universe = new Universe();
         bodyPositions = universe.getBodyPositions();
@@ -70,7 +78,7 @@ public class UniverseRenderer
     @Override
     public void display( GLAutoDrawable drawable )
     {
-        universe.simulate();
+        runSimulation();
 
         GL2 gl = drawable.getGL().getGL2();
         renderPositions( gl );
@@ -149,6 +157,29 @@ public class UniverseRenderer
             // Translate position pixel coords to model position.
             // Translate velocity pixel coords (relative to position) into a model velocity.
             // TODO
+
+            // TODO maybe can access the current opengl matrix, and use its inverse to scale the position coord to model
+            // space?
+        }
+    }
+
+    private void runSimulation()
+    {
+        // Process input events
+        KeyEvent keyEvent;
+        if ( ( keyEvent = keyEventQueue.poll() ) != null )
+        {
+            short key = keyEvent.getKeyCode();
+            if ( key == KeyEvent.VK_EQUALS )
+                simStepsPerFrame++;
+            else if ( key == KeyEvent.VK_MINUS && simStepsPerFrame > 1 )
+                simStepsPerFrame--;
+        }
+
+        // Do the simulation
+        for ( int i = 0; i < simStepsPerFrame; i++ )
+        {
+            universe.simulate();
         }
     }
 
