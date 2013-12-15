@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ca.szc.physics.nbodygravitation.model.Body;
+import ca.szc.physics.nbodygravitation.model2.Body;
 import ca.szc.physics.nbodygravitation.model2.method.DirectMethod;
 import ca.szc.physics.nbodygravitation.model2.method.SimulationMethod;
 import ca.szc.physics.nbodygravitation.model2.populator.Populator;
