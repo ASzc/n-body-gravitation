@@ -29,3 +29,4 @@ The jar is dependent on the JOGL native libraries, which are copied to target/li
 
 *   Plus/Equals key: Increase the number of simulation steps per frame
 *   Minus key: Decrease the number of simulation steps per frame
+*   Shift key: When held, plus/minus will add/subtract 10 steps rather than 1 step

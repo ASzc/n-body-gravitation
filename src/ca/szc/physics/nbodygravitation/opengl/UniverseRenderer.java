@@ -187,11 +187,15 @@ public class UniverseRenderer
         KeyEvent keyEvent;
         if ( ( keyEvent = keyEventQueue.poll() ) != null )
         {
+            int delta = 1;
+            if ( keyEvent.isShiftDown() )
+                delta = 10;
+
             short key = keyEvent.getKeyCode();
             if ( key == KeyEvent.VK_EQUALS )
-                simStepsPerFrame++;
-            else if ( key == KeyEvent.VK_MINUS && simStepsPerFrame > 1 )
-                simStepsPerFrame--;
+                simStepsPerFrame += delta;
+            else if ( key == KeyEvent.VK_MINUS && simStepsPerFrame > delta )
+                simStepsPerFrame -= delta;
         }
 
         // Do the simulation
