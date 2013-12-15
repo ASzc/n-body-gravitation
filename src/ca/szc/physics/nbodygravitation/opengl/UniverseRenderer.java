@@ -50,7 +50,7 @@ public class UniverseRenderer
             if ( sum > farthestPositionSum )
                 farthestPositionSum = sum;
         }
-        maxBound = farthestPositionSum * 1.1d;
+        maxBound = farthestPositionSum * 0.04d;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class UniverseRenderer
         GL2 gl = drawable.getGL().getGL2();
 
         gl.glClear( GL.GL_COLOR_BUFFER_BIT );
-        gl.glPointSize( 2.0f );
+        gl.glPointSize( 1 );
 
         gl.glBegin( GL.GL_POINTS );
         for ( TwoDimValue<Double> position : bodyPositions )
