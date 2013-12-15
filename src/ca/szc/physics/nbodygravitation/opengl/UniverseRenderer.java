@@ -92,6 +92,7 @@ public class UniverseRenderer
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        // http://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_Introduction.html
         // >1 if width is larger, <1 is height is larger, =1 if they are the same
         double aspectRatio = ( (double) width ) / Math.max( height, 1 );
 
