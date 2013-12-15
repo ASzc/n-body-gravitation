@@ -18,9 +18,12 @@
  */
 package ca.szc.physics.nbodygravitation.opengl;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
 
+import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -49,13 +52,12 @@ public class OpenGlSetup
             };
         } );
 
-        window.addGLEventListener( new UniverseRenderer() );
+        ConcurrentLinkedQueue<MouseEvent> mouseEventQueue = new ConcurrentLinkedQueue<>();
+        window.addGLEventListener( new UniverseRenderer( mouseEventQueue ) );
+        window.addMouseListener( new MousePointAndDrag( mouseEventQueue, MouseEvent.BUTTON1 ) );
 
         FPSAnimator animator = new FPSAnimator( window, 60 );
         animator.start();
-
-        // TODO eventually would like to do click-drag mouse for position/vector input of a new object to predict the
-        // motion of
 
         window.setVisible( true );
     }

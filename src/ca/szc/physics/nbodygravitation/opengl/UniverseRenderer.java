@@ -19,6 +19,7 @@
 package ca.szc.physics.nbodygravitation.opengl;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -29,6 +30,8 @@ import javax.media.opengl.glu.GLU;
 import ca.szc.physics.nbodygravitation.model.TwoDimValue;
 import ca.szc.physics.nbodygravitation.model.Universe;
 
+import com.jogamp.newt.event.MouseEvent;
+
 public class UniverseRenderer
     implements GLEventListener
 {
@@ -36,12 +39,21 @@ public class UniverseRenderer
 
     private final GLU glu = new GLU();
 
+    private MouseEvent lastMouseDraggedEvent;
+
+    private MouseEvent lastMousePressedEvent;
+
     private final double maxBound;
+
+    private final ConcurrentLinkedQueue<MouseEvent> mouseEventQueue;
 
     private final Universe universe;
 
-    public UniverseRenderer()
+    public UniverseRenderer( ConcurrentLinkedQueue<MouseEvent> mouseEventQueue )
     {
+        this.mouseEventQueue = mouseEventQueue;
+        lastMousePressedEvent = null;
+
         universe = new Universe();
         bodyPositions = universe.getBodyPositions();
 
@@ -59,7 +71,10 @@ public class UniverseRenderer
     public void display( GLAutoDrawable drawable )
     {
         universe.simulate();
-        render( drawable );
+
+        GL2 gl = drawable.getGL().getGL2();
+        renderPositions( gl );
+        renderPrediction( gl );
     }
 
     @Override
@@ -74,10 +89,8 @@ public class UniverseRenderer
         gl.glClearColor( 0, 0, 0, 1 ); // Black and opaque
     }
 
-    private void render( GLAutoDrawable drawable )
+    private void renderPositions( GL2 gl )
     {
-        GL2 gl = drawable.getGL().getGL2();
-
         gl.glClear( GL.GL_COLOR_BUFFER_BIT );
         gl.glPointSize( 2.0f );
 
@@ -89,6 +102,54 @@ public class UniverseRenderer
             gl.glVertex2d( position.getX(), position.getY() );
         }
         gl.glEnd();
+    }
+
+    private void renderPrediction( GL2 gl )
+    {
+        // Process input events
+        MouseEvent mouseEvent;
+        if ( ( mouseEvent = mouseEventQueue.poll() ) != null )
+        {
+            short eventType = mouseEvent.getEventType();
+            if ( eventType == MouseEvent.EVENT_MOUSE_PRESSED )
+            {
+                lastMousePressedEvent = mouseEvent;
+            }
+            else if ( eventType == MouseEvent.EVENT_MOUSE_DRAGGED )
+            {
+                // Clear through to the latest drag event, since they are produced faster than 60Hz
+                // Safe to not do it atomically since this method is the only consumer
+                while ( !mouseEventQueue.isEmpty()
+                    && mouseEventQueue.peek().getEventType() == MouseEvent.EVENT_MOUSE_DRAGGED )
+                {
+                    mouseEvent = mouseEventQueue.poll();
+                }
+
+                lastMouseDraggedEvent = mouseEvent;
+            }
+            else if ( eventType == MouseEvent.EVENT_MOUSE_RELEASED )
+            {
+                lastMousePressedEvent = null;
+                lastMouseDraggedEvent = null;
+            }
+        }
+
+        // Render a prediction if we have a position point and a velocity point.
+        if ( lastMousePressedEvent != null && lastMouseDraggedEvent != null )
+        {
+            int positionPixelX = lastMousePressedEvent.getX();
+            int positionPixelY = lastMousePressedEvent.getY();
+
+            int velocityPixelX = lastMouseDraggedEvent.getX();
+            int velocityPixelY = lastMouseDraggedEvent.getY();
+
+            System.out.println( "(" + positionPixelX + "," + positionPixelY + ") (" + velocityPixelX + ","
+                + velocityPixelY + ")" );
+
+            // Translate position pixel coords to model position.
+            // Translate velocity pixel coords (relative to position) into a model velocity.
+            // TODO
+        }
     }
 
     @Override
