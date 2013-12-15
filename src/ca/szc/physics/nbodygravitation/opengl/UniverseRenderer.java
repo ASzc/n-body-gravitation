@@ -34,6 +34,8 @@ public class UniverseRenderer
 {
     private final List<TwoDimValue<Double>> bodyPositions;
 
+    private final GLU glu = new GLU();
+
     private final double maxBound;
 
     private final Universe universe;
@@ -101,7 +103,6 @@ public class UniverseRenderer
         gl.glMatrixMode( GL2.GL_PROJECTION );
         gl.glLoadIdentity();
 
-        GLU glu = new GLU();
         if ( aspectRatio >= 1 )
             glu.gluOrtho2D( -maxBound * aspectRatio, maxBound * aspectRatio, -maxBound, maxBound );
         else if ( aspectRatio < 1 )
