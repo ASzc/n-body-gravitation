@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ca.szc.physics.nbodygravitation.model.Body;
 import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
 import ca.szc.physics.nbodygravitation.model.method.SimulationMethod;
 import ca.szc.physics.nbodygravitation.model.populator.Populator;
@@ -17,16 +16,16 @@ import ca.szc.physics.nbodygravitation.model.populator.SolSystemPopulator;
  */
 public class Universe
 {
-    /**
-     * The Newtonian gravitational constant. Units: Nm²kg⁻²
-     */
-    public final Double gravConst = 6.673e-11;
-
     private final List<Body> bodies;
 
     private final List<TwoDimValue<Double>> bodyPositions;
 
     private final List<TwoDimValue<Double>> bodyVelocities;
+
+    /**
+     * The Newtonian gravitational constant. Units: Nm²kg⁻²
+     */
+    public final Double gravConst = 6.673e-11;
 
     private final SimulationMethod simulationMethod;
 
