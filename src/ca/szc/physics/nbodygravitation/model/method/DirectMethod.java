@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License along with
  * n-body-gravitation.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.szc.physics.nbodygravitation.model2.method;
+package ca.szc.physics.nbodygravitation.model.method;
 
 import java.util.List;
 
-import ca.szc.physics.nbodygravitation.model2.Body;
+import ca.szc.physics.nbodygravitation.model.Body;
 
 /**
  * Direct method of model simulation. Uses no optimizations to trim the number of calculations. Slow, but is as accurate

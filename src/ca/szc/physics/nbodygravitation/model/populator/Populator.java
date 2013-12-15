@@ -1,10 +1,10 @@
-package ca.szc.physics.nbodygravitation.model2.populator;
+package ca.szc.physics.nbodygravitation.model.populator;
 
 import java.util.List;
 
-import ca.szc.physics.nbodygravitation.model2.Body;
-import ca.szc.physics.nbodygravitation.model2.TwoDimValue;
-import ca.szc.physics.nbodygravitation.model2.Universe;
+import ca.szc.physics.nbodygravitation.model.Body;
+import ca.szc.physics.nbodygravitation.model.TwoDimValue;
+import ca.szc.physics.nbodygravitation.model.Universe;
 
 /**
  * An abstract class of a universe populator

@@ -1,4 +1,4 @@
-package ca.szc.physics.nbodygravitation.model2;
+package ca.szc.physics.nbodygravitation.model;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -6,11 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ca.szc.physics.nbodygravitation.model2.Body;
-import ca.szc.physics.nbodygravitation.model2.method.DirectMethod;
-import ca.szc.physics.nbodygravitation.model2.method.SimulationMethod;
-import ca.szc.physics.nbodygravitation.model2.populator.Populator;
-import ca.szc.physics.nbodygravitation.model2.populator.SolSystemPopulator;
+import ca.szc.physics.nbodygravitation.model.Body;
+import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
+import ca.szc.physics.nbodygravitation.model.method.SimulationMethod;
+import ca.szc.physics.nbodygravitation.model.populator.Populator;
+import ca.szc.physics.nbodygravitation.model.populator.SolSystemPopulator;
 
 /**
  * Model of a universe containing a finite number of gravitational bodies.

@@ -1,8 +1,8 @@
-package ca.szc.physics.nbodygravitation.model2.method;
+package ca.szc.physics.nbodygravitation.model.method;
 
 import java.util.List;
 
-import ca.szc.physics.nbodygravitation.model2.Body;
+import ca.szc.physics.nbodygravitation.model.Body;
 
 /**
  * Abstract class for a model simulation method

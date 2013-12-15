@@ -8,8 +8,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
-import ca.szc.physics.nbodygravitation.model2.TwoDimValue;
-import ca.szc.physics.nbodygravitation.model2.Universe;
+import ca.szc.physics.nbodygravitation.model.TwoDimValue;
+import ca.szc.physics.nbodygravitation.model.Universe;
 
 public class UniverseRenderer
     implements GLEventListener

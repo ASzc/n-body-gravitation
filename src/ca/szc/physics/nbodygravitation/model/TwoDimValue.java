@@ -1,4 +1,4 @@
-package ca.szc.physics.nbodygravitation.model2;
+package ca.szc.physics.nbodygravitation.model;
 
 /**
  * Mutable components of a two dimensional value

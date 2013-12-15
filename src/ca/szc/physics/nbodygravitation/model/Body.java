@@ -1,4 +1,4 @@
-package ca.szc.physics.nbodygravitation.model2;
+package ca.szc.physics.nbodygravitation.model;
 
 public class Body
 {
