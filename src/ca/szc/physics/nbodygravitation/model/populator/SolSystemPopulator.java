@@ -71,15 +71,7 @@ public class SolSystemPopulator
         makeBody( earthMass * 0.815d, posSat, calcCircularOrbitVelocity( posFocus, solarMass, posSat ) );
         // Earth
         posSat = new TwoDimValue<>( 0.0d, astroUnit );
-        TwoDimValue<Double> posEarth = posSat;
-        TwoDimValue<Double> earthVelocity = calcCircularOrbitVelocity( posFocus, solarMass, posSat );
         makeBody( earthMass, posSat, calcCircularOrbitVelocity( posFocus, solarMass, posSat ) );
-        // Luna
-        posSat = new TwoDimValue<>( 0.0d, astroUnit + 3.98842e8 );
-        TwoDimValue<Double> velocity = calcCircularOrbitVelocity( posEarth, earthMass, posSat );
-        velocity.setX( velocity.getX() + earthVelocity.getX() );
-        velocity.setY( velocity.getY() + earthVelocity.getY() );
-        makeBody( earthMass * 0.0123d, posSat, velocity );
         // Mars
         posSat = new TwoDimValue<>( 0.0d, astroUnit * 1.5d );
         makeBody( earthMass * 0.107d, posSat, calcCircularOrbitVelocity( posFocus, solarMass, posSat ) );

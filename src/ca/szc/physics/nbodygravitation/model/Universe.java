@@ -55,7 +55,7 @@ public class Universe
      */
     public Universe()
     {
-        this( SolSystemPopulator.class, DirectMethod.class, TimeUnit.HOURS.toSeconds( 1 ) );
+        this( SolSystemPopulator.class, DirectMethod.class, TimeUnit.HOURS.toSeconds( 48 ) );
     }
 
     /**
