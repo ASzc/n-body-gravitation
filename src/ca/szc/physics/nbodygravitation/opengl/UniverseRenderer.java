@@ -16,9 +16,9 @@ public class UniverseRenderer
 {
     private final List<TwoDimValue<Double>> bodyPositions;
 
-    private final Universe universe;
-
     private final double maxBound;
+
+    private final Universe universe;
 
     public UniverseRenderer()
     {
@@ -51,7 +51,7 @@ public class UniverseRenderer
     public void init( GLAutoDrawable drawable )
     {
         GL2 gl = drawable.getGL().getGL2();
-        gl.glClearColor( 0.0f, 0.0f, 0.0f, 1.0f ); // Black and opaque
+        gl.glClearColor( 0, 0, 0, 1 ); // Black and opaque
     }
 
     private void render( GLAutoDrawable drawable )
@@ -74,28 +74,18 @@ public class UniverseRenderer
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        // >1 if width is larger, <1 is height is larger, =1 if they are the same
+        double aspectRatio = ( (double) width ) / Math.max( height, 1 );
+
         GL2 gl = drawable.getGL().getGL2();
 
+        gl.glMatrixMode( GL2.GL_PROJECTION );
+        gl.glLoadIdentity();
+
         GLU glu = new GLU();
-
-        // Compute aspect ratio of the new window
-        double aspect;
-        if ( height != 0 )
-            aspect = width / height;
-        else
-            aspect = width / 1;
-
-        // JOGL already calls this before calling this method
-        // glViewport(0, 0, width, height);
-
-        // Set the aspect ratio of the clipping area to match the viewport
-        gl.glMatrixMode( GL2.GL_PROJECTION ); // To operate on the Projection matrix
-        gl.glLoadIdentity(); // Reset the projection matrix
-        if ( width >= height )
-            // aspect >= 1, set the height from -1 to 1, with larger width
-            glu.gluOrtho2D( -maxBound * aspect, maxBound * aspect, -maxBound, maxBound );
-        else
-            // aspect < 1, set the width to -1 to 1, with larger height
-            glu.gluOrtho2D( -maxBound, maxBound, -maxBound / aspect, maxBound / aspect );
+        if ( aspectRatio >= 1 )
+            glu.gluOrtho2D( -maxBound * aspectRatio, maxBound * aspectRatio, -maxBound, maxBound );
+        else if ( aspectRatio < 1 )
+            glu.gluOrtho2D( -maxBound, maxBound, -maxBound / aspectRatio, maxBound / aspectRatio );
     }
 }
