@@ -19,7 +19,6 @@
 package ca.szc.physics.nbodygravitation.opengl;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -30,40 +29,27 @@ import javax.media.opengl.glu.GLU;
 import ca.szc.physics.nbodygravitation.model.TwoDimValue;
 import ca.szc.physics.nbodygravitation.model.Universe;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
-
 public class UniverseRenderer
     implements GLEventListener
 {
     private final List<TwoDimValue<Double>> bodyPositions;
 
-    private final GLU glu = new GLU();
+    private final GLU glu;
 
-    private final ConcurrentLinkedQueue<KeyEvent> keyEventQueue;
-
-    private MouseEvent lastMouseDraggedEvent;
-
-    private MouseEvent lastMousePressedEvent;
+    private final InputHandler inputHandler;
 
     private final double maxBound;
 
-    private final ConcurrentLinkedQueue<MouseEvent> mouseEventQueue;
-
-    private int simStepsPerFrame;
-
     private final Universe universe;
 
-    public UniverseRenderer( ConcurrentLinkedQueue<MouseEvent> mouseEventQueue,
-                             ConcurrentLinkedQueue<KeyEvent> keyEventQueue )
+    public UniverseRenderer( InputHandler inputHandler )
     {
-        this.mouseEventQueue = mouseEventQueue;
-        this.keyEventQueue = keyEventQueue;
-
-        simStepsPerFrame = 1;
-
         universe = new Universe();
         bodyPositions = universe.getBodyPositions();
+
+        glu = new GLU();
+
+        this.inputHandler = inputHandler;
 
         double farthestPositionSum = 0.0d;
         for ( TwoDimValue<Double> position : bodyPositions )
@@ -78,7 +64,13 @@ public class UniverseRenderer
     @Override
     public void display( GLAutoDrawable drawable )
     {
-        runSimulation();
+        inputHandler.processInput();
+
+        // Do the simulation
+        for ( int i = 0; i < inputHandler.getSimStepsPerFrame(); i++ )
+        {
+            universe.simulate();
+        }
 
         GL2 gl = drawable.getGL().getGL2();
         renderPositions( gl );
@@ -114,42 +106,14 @@ public class UniverseRenderer
 
     private void renderPrediction( GL2 gl )
     {
-        // Process input events
-        MouseEvent mouseEvent;
-        if ( ( mouseEvent = mouseEventQueue.poll() ) != null )
-        {
-            short eventType = mouseEvent.getEventType();
-            if ( eventType == MouseEvent.EVENT_MOUSE_PRESSED )
-            {
-                lastMousePressedEvent = mouseEvent;
-            }
-            else if ( eventType == MouseEvent.EVENT_MOUSE_DRAGGED )
-            {
-                // Clear through to the latest drag event, since they are produced faster than 60Hz
-                // Safe to not do it atomically since this method is the only consumer
-                while ( !mouseEventQueue.isEmpty()
-                    && mouseEventQueue.peek().getEventType() == MouseEvent.EVENT_MOUSE_DRAGGED )
-                {
-                    mouseEvent = mouseEventQueue.poll();
-                }
-
-                lastMouseDraggedEvent = mouseEvent;
-            }
-            else if ( eventType == MouseEvent.EVENT_MOUSE_RELEASED )
-            {
-                lastMousePressedEvent = null;
-                lastMouseDraggedEvent = null;
-            }
-        }
-
         // Render a prediction if we have a position point and a velocity point.
-        if ( lastMousePressedEvent != null && lastMouseDraggedEvent != null )
+        if ( inputHandler.mousePressAndDrag() )
         {
-            int positionPixelX = lastMousePressedEvent.getX();
-            int positionPixelY = lastMousePressedEvent.getY();
+            int positionPixelX = inputHandler.getLastMousePress().getX();
+            int positionPixelY = inputHandler.getLastMousePress().getY();
 
-            int velocityPixelX = lastMouseDraggedEvent.getX();
-            int velocityPixelY = lastMouseDraggedEvent.getY();
+            int velocityPixelX = inputHandler.getLastMouseDrag().getX();
+            int velocityPixelY = inputHandler.getLastMouseDrag().getY();
 
             System.out.println( "(" + positionPixelX + "," + positionPixelY + ") (" + velocityPixelX + ","
                 + velocityPixelY + ")" );
@@ -179,29 +143,5 @@ public class UniverseRenderer
             glu.gluOrtho2D( -maxBound * aspectRatio, maxBound * aspectRatio, -maxBound, maxBound );
         else if ( aspectRatio < 1 )
             glu.gluOrtho2D( -maxBound, maxBound, -maxBound / aspectRatio, maxBound / aspectRatio );
-    }
-
-    private void runSimulation()
-    {
-        // Process input events
-        KeyEvent keyEvent;
-        if ( ( keyEvent = keyEventQueue.poll() ) != null )
-        {
-            int delta = 1;
-            if ( keyEvent.isShiftDown() )
-                delta = 10;
-
-            short key = keyEvent.getKeyCode();
-            if ( key == KeyEvent.VK_EQUALS )
-                simStepsPerFrame += delta;
-            else if ( key == KeyEvent.VK_MINUS && simStepsPerFrame >= delta )
-                simStepsPerFrame -= delta;
-        }
-
-        // Do the simulation
-        for ( int i = 0; i < simStepsPerFrame; i++ )
-        {
-            universe.simulate();
-        }
     }
 }

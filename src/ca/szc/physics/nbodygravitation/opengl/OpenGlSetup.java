@@ -66,7 +66,7 @@ public class OpenGlSetup
         ConcurrentLinkedQueue<KeyEvent> keyEventQueue = new ConcurrentLinkedQueue<>();
         window.addKeyListener( new KeyboardSimulationControl( keyEventQueue ) );
 
-        window.addGLEventListener( new UniverseRenderer( mouseEventQueue, keyEventQueue ) );
+        window.addGLEventListener( new UniverseRenderer( new InputHandler( keyEventQueue, mouseEventQueue ) ) );
 
         FPSAnimator animator = new FPSAnimator( window, 60 );
         animator.setUpdateFPSFrames( 120, printFps ? System.out : null );
