@@ -42,6 +42,14 @@ public class UniverseRenderer
 
     private final Universe universe;
 
+    private int viewportHeight;
+
+    private int viewportWidth;
+
+    private double worldHeight;
+
+    private double worldWidth;
+
     public UniverseRenderer( InputHandler inputHandler )
     {
         universe = new Universe();
@@ -92,13 +100,12 @@ public class UniverseRenderer
     private void renderPositions( GL2 gl )
     {
         gl.glClear( GL.GL_COLOR_BUFFER_BIT );
-        gl.glPointSize( 2.0f );
+        gl.glPointSize( 2 );
+        gl.glColor3f( 255, 128, 0 );
 
         gl.glBegin( GL.GL_POINTS );
         for ( TwoDimValue<Double> position : bodyPositions )
         {
-            gl.glColor3f( 255, 128, 0 );
-
             gl.glVertex2d( position.getX(), position.getY() );
         }
         gl.glEnd();
@@ -115,21 +122,31 @@ public class UniverseRenderer
             int velocityPixelX = inputHandler.getLastMouseDrag().getX();
             int velocityPixelY = inputHandler.getLastMouseDrag().getY();
 
-            System.out.println( "(" + positionPixelX + "," + positionPixelY + ") (" + velocityPixelX + ","
-                + velocityPixelY + ")" );
+            // Convert velocity pixel coords (relative to position pixel coords) into a model velocity.
+            final double velocityMultiplier = 1e6; // Units: ms⁻¹
+            double xSquared = Math.pow( velocityPixelX - positionPixelX, 2 ) / viewportWidth * velocityMultiplier;
+            double ySquared = Math.pow( velocityPixelY - positionPixelY, 2 ) / viewportHeight * velocityMultiplier;
+            double velocityMagnitude = Math.sqrt( xSquared + ySquared );
 
             // Translate position pixel coords to model position.
-            // Translate velocity pixel coords (relative to position) into a model velocity.
-            // TODO
+            double positionWorldX = positionPixelX * ( worldWidth / viewportWidth );
+            double positionWorldY = positionPixelY * ( worldHeight / viewportHeight );
 
-            // TODO maybe can access the current opengl matrix, and use its inverse to scale the position coord to model
-            // space?
+            gl.glBegin( GL.GL_POINTS );
+            gl.glColor3f( 0, 128, 255 );
+
+            gl.glVertex2d( positionWorldX, positionWorldY );
+
+            gl.glEnd();
         }
     }
 
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        viewportWidth = width;
+        viewportHeight = height;
+
         // http://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_Introduction.html
         // >1 if width is larger, <1 is height is larger, =1 if they are the same
         double aspectRatio = ( (double) width ) / Math.max( height, 1 );
@@ -139,9 +156,23 @@ public class UniverseRenderer
         gl.glMatrixMode( GL2.GL_PROJECTION );
         gl.glLoadIdentity();
 
+        double left = -maxBound;
+        double right = maxBound;
+        double bottom = -maxBound;
+        double top = maxBound;
         if ( aspectRatio >= 1 )
-            glu.gluOrtho2D( -maxBound * aspectRatio, maxBound * aspectRatio, -maxBound, maxBound );
+        {
+            left *= aspectRatio;
+            right *= aspectRatio;
+        }
         else if ( aspectRatio < 1 )
-            glu.gluOrtho2D( -maxBound, maxBound, -maxBound / aspectRatio, maxBound / aspectRatio );
+        {
+            bottom /= aspectRatio;
+            top /= aspectRatio;
+        }
+        glu.gluOrtho2D( left, right, bottom, top );
+
+        worldWidth = Math.abs( left - right );
+        worldHeight = Math.abs( bottom - top );
     }
 }
