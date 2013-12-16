@@ -194,7 +194,7 @@ public class UniverseRenderer
             short key = keyEvent.getKeyCode();
             if ( key == KeyEvent.VK_EQUALS )
                 simStepsPerFrame += delta;
-            else if ( key == KeyEvent.VK_MINUS && simStepsPerFrame > delta )
+            else if ( key == KeyEvent.VK_MINUS && simStepsPerFrame >= delta )
                 simStepsPerFrame -= delta;
         }
 
