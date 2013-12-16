@@ -129,13 +129,16 @@ public class UniverseRenderer
             double velocityMagnitude = Math.sqrt( xSquared + ySquared );
 
             // Translate position pixel coords to model position.
-            double positionWorldX = positionPixelX * ( worldWidth / viewportWidth );
-            double positionWorldY = positionPixelY * ( worldHeight / viewportHeight );
+            double positionWorldX = ( ( viewportWidth / 2 ) - positionPixelX ) * -( worldWidth / viewportWidth );
+            double positionWorldY = ( ( viewportHeight / 2 ) - positionPixelY ) * ( worldHeight / viewportHeight );
 
             gl.glBegin( GL.GL_POINTS );
             gl.glColor3f( 0, 128, 255 );
 
             gl.glVertex2d( positionWorldX, positionWorldY );
+
+            // TODO Clone universe, add prediction body, run simulation ahead n steps, rendering the body position with
+            // glVertex2d each time
 
             gl.glEnd();
         }
