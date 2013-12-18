@@ -19,6 +19,7 @@
 package ca.szc.physics.nbodygravitation.opengl;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -28,6 +29,8 @@ import javax.media.opengl.glu.GLU;
 
 import ca.szc.physics.nbodygravitation.model.TwoDimValue;
 import ca.szc.physics.nbodygravitation.model.Universe;
+import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
+import ca.szc.physics.nbodygravitation.model.populator.SolSystemPopulator;
 
 public class UniverseRenderer
     implements GLEventListener
@@ -52,7 +55,7 @@ public class UniverseRenderer
 
     public UniverseRenderer( InputHandler inputHandler )
     {
-        universe = new Universe();
+        universe = new Universe( SolSystemPopulator.class, DirectMethod.class, TimeUnit.HOURS.toSeconds( 12 ) );
         bodyPositions = universe.getBodyPositions();
 
         glu = new GLU();
@@ -123,10 +126,9 @@ public class UniverseRenderer
             int velocityPixelY = inputHandler.getLastMouseDrag().getY();
 
             // Convert velocity pixel coords (relative to position pixel coords) into a model velocity.
-            final double velocityMultiplier = 1e6; // Units: ms⁻¹
-            double xSquared = Math.pow( velocityPixelX - positionPixelX, 2 ) / viewportWidth * velocityMultiplier;
-            double ySquared = Math.pow( velocityPixelY - positionPixelY, 2 ) / viewportHeight * velocityMultiplier;
-            double velocityMagnitude = Math.sqrt( xSquared + ySquared );
+            final double velocityMultiplier = 1e3; // Units: ms⁻¹
+            double velocityX = ( velocityPixelX - positionPixelX ) / viewportWidth * velocityMultiplier;
+            double velocityY = ( velocityPixelY - positionPixelY ) / viewportHeight * velocityMultiplier;
 
             // Translate position pixel coords to model position.
             double positionWorldX = ( ( viewportWidth / 2 ) - positionPixelX ) * -( worldWidth / viewportWidth );
@@ -137,8 +139,17 @@ public class UniverseRenderer
 
             gl.glVertex2d( positionWorldX, positionWorldY );
 
-            // TODO Clone universe, add prediction body, run simulation ahead n steps, rendering the body position with
-            // glVertex2d each time
+            TwoDimValue<Double> predPos = new TwoDimValue<>( positionWorldX, positionWorldY );
+            TwoDimValue<Double> predVel = new TwoDimValue<>( velocityX, velocityY );
+            Universe predictionUniverse = universe.makePredictionUniverse( 1e3, predPos, predVel );
+
+            gl.glColor3f( 0, 255, 0 );
+
+            for ( int i = 0; i < 100; i++ )
+            {
+                predictionUniverse.simulate();
+                gl.glVertex2d( predPos.getX(), predPos.getY() );
+            }
 
             gl.glEnd();
         }

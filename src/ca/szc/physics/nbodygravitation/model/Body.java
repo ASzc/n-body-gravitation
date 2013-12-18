@@ -70,6 +70,11 @@ public class Body
         return position;
     }
 
+    public TwoDimValue<Double> getVelocity()
+    {
+        return velocity;
+    }
+
     public void move( double timeStep )
     {
         // Update velocity components and position coordinates.

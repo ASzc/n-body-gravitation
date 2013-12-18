@@ -22,12 +22,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import ca.szc.physics.nbodygravitation.model.method.DirectMethod;
 import ca.szc.physics.nbodygravitation.model.method.SimulationMethod;
 import ca.szc.physics.nbodygravitation.model.populator.Populator;
-import ca.szc.physics.nbodygravitation.model.populator.SolSystemPopulator;
 
 /**
  * Model of a universe containing a finite number of gravitational bodies.
@@ -47,15 +44,20 @@ public class Universe
 
     private final SimulationMethod simulationMethod;
 
+    private final double timeStep;
+
     /**
-     * A default universe
-     * 
-     * @see {@link SolSystemPopulator}
-     * @see {@link DirectMethod}
+     * A constructor for clones
      */
-    public Universe()
+    private Universe( List<Body> bodies, List<TwoDimValue<Double>> bodyPositions,
+                      List<TwoDimValue<Double>> bodyVelocities, SimulationMethod simulationMethod, double timeStep )
     {
-        this( SolSystemPopulator.class, DirectMethod.class, TimeUnit.HOURS.toSeconds( 12 ) );
+        this.bodies = bodies;
+        this.bodyPositions = bodyPositions;
+        this.bodyVelocities = bodyVelocities;
+
+        this.simulationMethod = simulationMethod;
+        this.timeStep = timeStep;
     }
 
     /**
@@ -71,6 +73,8 @@ public class Universe
         bodies = new LinkedList<>();
         bodyPositions = new LinkedList<>();
         bodyVelocities = new LinkedList<>();
+
+        this.timeStep = timeStep;
 
         try
         {
@@ -97,6 +101,54 @@ public class Universe
         {
             throw new RuntimeException( "Unable to create an instance of simulationMethod", e );
         }
+    }
+
+    public Universe clone()
+    {
+        LinkedList<Body> cloneBodies = new LinkedList<>();
+        List<TwoDimValue<Double>> cloneBodyPositions = new LinkedList<>();
+        List<TwoDimValue<Double>> cloneBodyVelocities = new LinkedList<>();
+
+        SimulationMethod cloneSimulationMethod;
+        try
+        {
+            Class<? extends SimulationMethod> simulationMethodClass = simulationMethod.getClass();
+            Constructor<? extends SimulationMethod> constructor =
+                simulationMethodClass.getConstructor( List.class, double.class );
+            cloneSimulationMethod = constructor.newInstance( cloneBodies, timeStep );
+        }
+        catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+                        | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw new RuntimeException( "Unable to create an instance of simulationMethod", e );
+        }
+
+        Universe clone =
+            new Universe( cloneBodies, cloneBodyPositions, cloneBodyVelocities, cloneSimulationMethod, timeStep );
+
+        for ( Body body : bodies )
+        {
+            TwoDimValue<Double> bodyPos =
+                new TwoDimValue<Double>( body.getPosition().getX(), body.getPosition().getY() );
+            TwoDimValue<Double> bodyVel =
+                new TwoDimValue<Double>( body.getVelocity().getX(), body.getVelocity().getY() );
+
+            cloneBodies.add( new Body( clone, body.getMass(), bodyPos, bodyVel ) );
+            cloneBodyPositions.add( bodyPos );
+            cloneBodyVelocities.add( bodyVel );
+        }
+
+        return clone;
+    }
+
+    public Universe makePredictionUniverse( Double bodyMass, TwoDimValue<Double> bodyPos, TwoDimValue<Double> bodyVel )
+    {
+        Universe clone = clone();
+        clone.bodies.add( new Body( clone, bodyMass, bodyPos, bodyVel ) );
+        clone.bodyPositions.add( bodyPos );
+        clone.bodyVelocities.add( bodyVel );
+
+        return clone;
     }
 
     /**
